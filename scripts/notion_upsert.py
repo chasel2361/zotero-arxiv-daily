@@ -67,10 +67,12 @@ def notion_create_page(p: dict):
         PROP_STATUS: {"select": {"name": DEFAULT_STATUS}},
     }
 
-    cat = (p.get("category") or "").strip()
-    if cat:
-        # Multi-select 以「name」建立/指派
-        props[PROP_CATEGORY] = {"multi_select": [{"name": cat[:100]}]}
+    cats = p.get("categories") or []
+    if isinstance(cats, str):
+        cats = [cats]
+    cats = [c.strip() for c in cats if c and c.strip()]
+    if cats:
+        props[PROP_CATEGORY] = {"multi_select": [{"name": c[:100]} for c in cats[:10]]}
 
     payload = {
         "parent": {"database_id": NOTION_DATABASE_ID},
