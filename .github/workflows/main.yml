@@ -37,3 +37,13 @@ jobs:
           LANGUAGE: ${{ vars.LANGUAGE }}
         run: |
           uv run main.py
+        
+      - name: Upsert to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          RECOMMENDATIONS_JSON: output/recommendations.json
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+          python scripts/notion_upsert.py
