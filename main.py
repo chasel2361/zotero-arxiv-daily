@@ -227,7 +227,7 @@ if __name__ == '__main__':
             "category": categories,
             "pdf_url": str(getattr(p, "pdf_url", "") or ""),
             "code_url": str(getattr(p, "code_url", "") or ""),
-            "score": float(score) if isinstance(score, (int, float)) else None,
+            "score": round(float(score), 2) if isinstance(score, (int, float)) else None,
         })
     meta = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
