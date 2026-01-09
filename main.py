@@ -29,6 +29,7 @@ from tempfile import mkstemp
 from paper import ArxivPaper
 from llm import set_global_llm
 import feedparser
+import json
 from datetime import datetime, timezone
 
 def get_zotero_corpus(id:str,key:str) -> list[dict]:
