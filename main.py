@@ -222,10 +222,11 @@ if __name__ == '__main__':
         payload.append({
             "arxiv_id": str(arxiv_id),
             "title": str(title),
-            "url": str(url),
             "abstract": str(abstract),
-            "authors": str(authors),
-            "category": category if isinstance(category, (str, int, float)) else str(category),
+            "authors": authors,
+            "category": categories,
+            "pdf_url": str(getattr(p, "pdf_url", "") or ""),
+            "code_url": str(getattr(p, "code_url", "") or ""),
             "score": float(score) if isinstance(score, (int, float)) else None,
         })
     meta = {
