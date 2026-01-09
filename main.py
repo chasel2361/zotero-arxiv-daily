@@ -29,6 +29,7 @@ from tempfile import mkstemp
 from paper import ArxivPaper
 from llm import set_global_llm
 import feedparser
+from datetime import datetime, timezone
 
 def get_zotero_corpus(id:str,key:str) -> list[dict]:
     zot = zotero.Zotero(id, 'user', key)
@@ -193,6 +194,36 @@ if __name__ == '__main__':
             logger.info("Using Local LLM as global LLM.")
             set_global_llm(lang=args.language)
 
+    # dump paper metadata
+    os.makedirs('output', exist_ok=True)
+    payload = []
+    for p in papers:
+        # 盡量用安全方式取值（不同版本欄位名可能不同）
+        arxiv_id = getattr(p, "arxiv_id", None) or getattr(p, "id", None) or ""
+        title    = getattr(p, "title", "") or ""
+        url      = getattr(p, "url", "") or (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else "")
+        abstract = getattr(p, "abstract", "") or ""
+        authors  = getattr(p, "authors", "") or getattr(p, "author", "") or ""
+        category = getattr(p, "category", "") or getattr(p, "categories", "") or ""
+        score    = getattr(p, "score", None)
+        
+        payload.append({
+            "arxiv_id": str(arxiv_id),
+            "title": str(title),
+            "url": str(url),
+            "abstract": str(abstract),
+            "authors": str(authors),
+            "category": category if isinstance(category, (str, int, float)) else str(category),
+            "score": float(score) if isinstance(score, (int, float)) else None,
+        })
+    meta = {
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "count": len(payload),
+    }
+    with open("output/recommendations.json", "w", encoding="utf-8") as f:
+        json.dump({"meta": meta, "papers": payload}, f, ensure_ascii=False, indent=2)
+    
+    # render and send email
     html = render_email(papers)
     logger.info("Sending email...")
     send_email(args.sender, args.receiver, args.sender_password, args.smtp_server, args.smtp_port, html)
