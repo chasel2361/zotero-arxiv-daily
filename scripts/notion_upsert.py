@@ -78,6 +78,11 @@ def notion_create_page(p: dict):
     }
 
     r = requests.post(url, headers=HEADERS, json=payload, timeout=30)
+    if not r.ok:
+        print("Notion create page failed")
+        print("Status:", r.status_code)
+        print("Response:", r.text)
+
     r.raise_for_status()
     return r.json()["id"]
 
