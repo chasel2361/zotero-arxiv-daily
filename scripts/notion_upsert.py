@@ -17,7 +17,8 @@ HEADERS = {
 # === 你的 Notion 欄位名稱（如有不同，改這裡即可） ===
 PROP_TITLE = "Title"
 PROP_ARXIV_ID = "arXiv ID"
-PROP_URL = "URL"
+PROP_PDF_URL = "pdf_url"
+PROP_CODE_URL = "code_url"
 PROP_ABSTRACT = "Abstract"
 PROP_AUTHORS = "Authors"
 PROP_CATEGORY = "Category"
@@ -58,7 +59,8 @@ def notion_create_page(p: dict):
     props = {
         PROP_TITLE: {"title": [{"text": {"content": p["title"][:2000]}}]},
         PROP_ARXIV_ID: {"rich_text": [{"text": {"content": p["arxiv_id"]}}]},
-        PROP_URL: {"url": p.get("url") or None},
+        PROP_PDF_URL: {"url": p.get("pdf_url") or None},
+        PROP_CODE_URL: {"url": p.get("code_url") or None},
         PROP_ABSTRACT: {"rich_text": [{"text": {"content": (p.get("abstract") or "")[:2000]}}]},
         PROP_AUTHORS: {"rich_text": [{"text": {"content": (p.get("authors") or "")[:2000]}}]},
         PROP_SCORE: {"number": p.get("score")},
@@ -67,7 +69,7 @@ def notion_create_page(p: dict):
         PROP_STATUS: {"select": {"name": DEFAULT_STATUS}},
     }
 
-    cats = p.get("categories") or []
+    cats = p.get("category") or []
     if isinstance(cats, str):
         cats = [cats]
     cats = [c.strip() for c in cats if c and c.strip()]
