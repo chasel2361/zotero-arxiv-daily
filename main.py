@@ -203,9 +203,20 @@ if __name__ == '__main__':
         arxiv_id = getattr(p, "arxiv_id", None) or getattr(p, "id", None) or ""
         title    = getattr(p, "title", "") or ""
         url      = getattr(p, "url", "") or (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else "")
-        abstract = getattr(p, "abstract", "") or ""
-        authors  = getattr(p, "authors", "") or getattr(p, "author", "") or ""
-        category = getattr(p, "category", "") or getattr(p, "categories", "") or ""
+        abstract = str(getattr(p, "tldr", "") or "")
+        # Authors：照 render_email 的方式取乾淨人名
+        author_list = [a.name for a in (p.authors or [])]
+        authors = ", ".join([x.strip() for x in author_list if x and x.strip()])
+        # Categories：依你的 ArxivPaper 定義調整
+        # 常見可能是 p.categories(list[str]) 或 p.primary_category(str) 或 p.category(str)
+        categories = []
+        if hasattr(p, "categories") and p.categories:
+            categories = list(p.categories)
+        elif hasattr(p, "primary_category") and p.primary_category:
+            categories = [p.primary_category]
+        elif hasattr(p, "category") and p.category:
+            categories = [p.category]
+        categories = [str(c).strip() for c in categories if str(c).strip()]
         score    = getattr(p, "score", None)
         
         payload.append({
