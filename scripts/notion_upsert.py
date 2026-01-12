@@ -106,6 +106,9 @@ def notion_update_page(page_id: str, p: dict):
 
 
 def main():
+    if not os.path.exists(RECO_JSON_PATH):
+        print(f"{RECO_JSON_PATH} not found; skip Notion upsert.")
+        return
     with open(RECO_JSON_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
