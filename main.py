@@ -182,7 +182,10 @@ if __name__ == '__main__':
     if len(papers) == 0:
         logger.info("No new papers found. Yesterday maybe a holiday and no one submit their work :). If this is not the case, please check the ARXIV_QUERY.")
         if not args.send_empty:
-          exit(0)
+            os.makedirs("output", exist_ok=True)
+            with open("output/recommendations.json", "w", encoding="utf-8") as f:
+                json.dump({"meta": {"count": 0}, "papers": []}, f, ensure_ascii=False, indent=2)  
+            exit(0)
     else:
         logger.info("Reranking papers...")
         papers = rerank_paper(papers, corpus)
